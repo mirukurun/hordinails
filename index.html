@@ -229,6 +229,9 @@ a.btn { display: inline-block; text-decoration: none; }
 .grand span { font-weight: 600; font-size: 13.5px; }
 .grand b { grid-row: span 2; grid-column: 2; font-family: var(--display); font-weight: 400; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .grand small { font-size: 12.5px; }
+.ig-send { display: grid; gap: 8px; }
+.ig-send .sub { margin: 0; font-size: 14px; }
+.ig-send textarea { width: 100%; box-sizing: border-box; font: 13px/1.45 var(--body); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: inherit; resize: vertical; }
 .cal .sub { margin: 0 0 8px; color: var(--muted); font-size: 13.5px; }
 .cal .row { display: flex; flex-wrap: wrap; gap: 8px; }
 .cal .btn { text-decoration: none; flex: 1 1 180px; text-align: center; }
@@ -400,7 +403,7 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
     <ol class="steps">
       <li><b>Build your set</b><span>Choose the length, design tier and extras. The price and time update as you go.</span></li>
       <li><b>Pick colours and design</b><span>Choose one or more gel colours and add photos of what you'd like.</span></li>
-      <li><b>Choose a time</b><span>Only times that fit your set are shown. I confirm by SMS, and you pay at the studio.</span></li>
+      <li><b>Choose a time</b><span>Only times that fit your set are shown. You send the request to me on Instagram, I confirm it there, and you pay at the studio.</span></li>
     </ol>
   </section>
 
@@ -524,7 +527,7 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
           <p class="sub" id="bk-day-note"></p>
           <div class="slots" id="bk-slots"></div>
           <p class="note" id="bk-sat" hidden>Saturdays are 12:00–18:00. Need to start earlier? Message me on Instagram: sometimes it's possible.</p>
-          <p class="note">Open Mon–Fri 10:00–19:00, Sat 12:00–18:00, closed on Sundays. Times are for the full set and approximate. Prototype: busy slots are made up until the real calendar is connected.</p>
+          <p class="note">Open Mon–Fri 10:00–19:00, Sat 12:00–18:00, closed on Sundays. Times are for the full set and approximate. I confirm every time personally on Instagram.</p>
           <button class="btn wide" id="bk-next" disabled>Continue</button>
         </div>
 
@@ -537,7 +540,7 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
           <p class="err" id="bk-err" hidden></p>
           <div class="row">
             <button class="btn ghost" type="button" id="bk-back">Back</button>
-            <button class="btn" type="submit" id="bk-send">Send booking request</button>
+            <button class="btn" type="submit" id="bk-send">Continue</button>
           </div>
         </form>
 
@@ -548,16 +551,19 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
             <b id="bk-total"></b>
             <small id="bk-time"></small>
           </div>
+          <div class="ig-send">
+            <p class="sub"><b>Last step:</b> send this request to me on Instagram. The time is yours once I reply.</p>
+            <textarea id="bk-msg" rows="7" readonly aria-label="Your booking request"></textarea>
+            <button class="btn wide" id="bk-copy-ig">Copy and open Instagram</button>
+            <p class="note" id="bk-copied" hidden>Copied. In the chat with @hordi_nails, paste it and send.</p>
+          </div>
           <div class="cal">
             <p class="sub">Add it to your calendar</p>
             <div class="row">
               <a class="btn ghost" id="bk-gcal" target="_blank" rel="noopener">Google Calendar</a>
-              <button class="btn ghost" id="bk-ics">Apple / Outlook (.ics)</button>
+              <a class="btn ghost" id="bk-ics" download="hordi-nails-appointment.ics">Apple / Outlook (.ics)</a>
             </div>
-            <p class="stub" id="bk-ics-note" hidden>Prototype: this preview can't save files. On the live site this button downloads the event for Apple Calendar or Outlook.</p>
           </div>
-          <p class="note">The nail tech looks at your colours and design and confirms the booking and price by SMS. You get a reminder the day before.</p>
-          <p class="stub">Prototype: nothing was actually sent.</p>
           <button class="btn wide" id="bk-ok">Done</button>
         </div>
       </div>
@@ -887,7 +893,7 @@ function updateBook() {
   document.getElementById("book-need").textContent = msg ? msg[0].toUpperCase() + msg.slice(1) + "." : "";
 }
 agree.onchange = updateBook;
-// Booking: day + time from the slot length, then contact details. Prototype only: slots are made up and nothing is sent.
+// Booking: day + time from the slot length, then contact details, then the client sends the request to @hordi_nails on Instagram.
 // Studio hours by weekday (0 = Sunday): Mon–Fri 10–19, Sat 12–18, Sunday closed. An earlier Saturday start is possible only by arrangement.
 const HOURS = { 1: [600, 1140], 2: [600, 1140], 3: [600, 1140], 4: [600, 1140], 5: [600, 1140], 6: [720, 1080] };
 const bk = { day: null, slot: null };
@@ -896,14 +902,14 @@ const hhmm = m => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m %
 const dayKey = d => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 const fmtDay = d => d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
 
-// Fake bookings so the calendar looks real: one or two busy blocks per day, the same every time for that date
+// Times already taken. Diana edits this list: "YYYY-MM-DD": [["from", "to"], ...]
+const BUSY = {
+  // "2026-11-20": [["10:00", "14:00"]],
+};
+const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
 function busyFor(d) {
-  let h = 0; for (const c of dayKey(d)) h = (h * 31 + c.charCodeAt(0)) % 9973;
-  const [from] = HOURS[d.getDay()];
-  if (d.getDay() === 6) return h % 2 ? [] : [[from + 240, 120]];
-  const blocks = [[from + (h % 5) * 60, 120]];
-  if (h % 3 === 0) blocks.push([from + 300, 90]);
-  return blocks;
+  const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return (BUSY[k] || []).map(([a, b]) => [toMin(a), toMin(b) - toMin(a)]);
 }
 function slotsFor(d, need) {
   if (!HOURS[d.getDay()]) return [];
@@ -952,8 +958,8 @@ function renderSlots() {
 }
 function showStep(n) {
   $("bk-when").hidden = n !== 1; $("bk-who").hidden = n !== 2; $("bk-done").hidden = n !== 3;
-  $("bk-step").textContent = n < 3 ? `Step ${n} of 2` : "Booking request";
-  $("bk-title").textContent = ["", "Pick a day and time", "Your details", "Request sent ✓"][n];
+  $("bk-step").textContent = `Step ${n} of 3`;
+  $("bk-title").textContent = ["", "Pick a day and time", "Your details", "Almost done"][n];
   $("bk-sum").hidden = n === 3;
 }
 function openBooking() {
@@ -978,7 +984,7 @@ $("bk-back").onclick = () => showStep(1);
 $("bk-who").onsubmit = e => {
   e.preventDefault();
   const name = $("bk-name").value.trim(), phone = $("bk-phone").value.replace(/[\s-]/g, "");
-  const err = !name ? "Please write your name." : !/^\+?\d{8,13}$/.test(phone) ? "Please write a phone number we can text, for example 070 123 45 67." : "";
+  const err = !name ? "Please write your name." : !/^\+?\d{8,13}$/.test(phone) ? "Please write your phone number, for example 070 123 45 67." : "";
   $("bk-err").hidden = !err; $("bk-err").textContent = err;
   if (err) return;
   const r = calc(state);
@@ -988,6 +994,14 @@ $("bk-who").onsubmit = e => {
     ["Colours", pickedColours.map(id => colourName(colourById[id])).join(", ")],
     ["Design", $("mood-summary").textContent.replace(/^Design: /, "")],
   ];
+  const extra = [["E-mail", $("bk-email").value.trim()], ["Instagram", $("bk-ig").value.trim()]].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+  $("bk-msg").value = [
+    "Hi Diana! Booking request from hordinails.com",
+    ...rows.map(([a, b]) => `${a}: ${b}`),
+    `Total: ${sek(r.kr)}, approx. ${dur(r.min)}`,
+    `Name: ${name}`, `Phone: ${phone}`, ...extra,
+  ].join("\n");
+  $("bk-copied").hidden = true;
   $("bk-total").textContent = sek(r.kr);
   $("bk-time").textContent = `approx. ${dur(r.min)} · no prepayment`;
   setCalendarLinks(r);
@@ -996,7 +1010,12 @@ $("bk-who").onsubmit = e => {
   showStep(3); $("bk-ok").focus();
 };
 $("bk-ok").onclick = closeBooking;
-$("bk-ics").onclick = () => { $("bk-ics-note").hidden = false; };
+$("bk-copy-ig").onclick = async () => {
+  const msg = $("bk-msg"); msg.select();
+  try { await navigator.clipboard.writeText(msg.value); } catch { try { document.execCommand("copy"); } catch {} }
+  $("bk-copied").hidden = false;
+  window.open("https://ig.me/m/hordi_nails", "_blank", "noopener");
+};
 
 // Calendar event for the client. Times are local Stockholm time (floating, no time zone).
 function setCalendarLinks(r) {
@@ -1004,7 +1023,7 @@ function setCalendarLinks(r) {
   const end = new Date(start.getTime() + r.min * 60000);
   const stamp = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}00`;
   const title = "Nails with @hordi_nails";
-  const details = `${r.lines.map(l => l.label).join(", ")}. Total ${sek(r.kr)}, approx. ${dur(r.min)}. Waiting for confirmation by SMS. Please come alone and on time.`;
+  const details = `${r.lines.map(l => l.label).join(", ")}. Total ${sek(r.kr)}, approx. ${dur(r.min)}. Confirmed once @hordi_nails replies on Instagram. Please come alone and on time.`;
   const where = "Upplands Väsby";
   $("bk-gcal").href = "https://calendar.google.com/calendar/render?" + new URLSearchParams({
     action: "TEMPLATE", text: title, dates: `${stamp(start)}/${stamp(end)}`, details, location: where, ctz: "Europe/Stockholm"
@@ -1016,9 +1035,7 @@ function setCalendarLinks(r) {
     `SUMMARY:${esc(title)}`, `DESCRIPTION:${esc(details)}`, `LOCATION:${esc(where)}`,
     "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY", `DESCRIPTION:${esc(title)}`, "END:VALARM",
     "END:VEVENT", "END:VCALENDAR"].join("\r\n");
-  // Live site: serve this as a download (hordi-nails-appointment.ics). The artifact preview cannot save files.
-  bk.ics = ics;
-  $("bk-ics-note").hidden = true;
+  $("bk-ics").href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 }
 renderColours();
 
