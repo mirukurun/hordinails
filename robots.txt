@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hordinails.com/sitemap.xml
