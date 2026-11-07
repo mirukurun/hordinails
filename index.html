@@ -536,8 +536,8 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
         <form id="bk-who" hidden novalidate>
           <p class="bk-picked" id="bk-picked"></p>
           <label>Name<input id="bk-name" autocomplete="name" required></label>
-          <label>Phone<input id="bk-phone" type="tel" autocomplete="tel" placeholder="07x xxx xx xx" required></label>
-          <label>E-mail <small>(optional, for the reminder)</small><input id="bk-email" type="email" autocomplete="email"></label>
+          <label>E-mail <small>(your confirmation comes here)</small><input id="bk-email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+          <label>Phone <small>(optional)</small><input id="bk-phone" type="tel" autocomplete="tel" placeholder="07x xxx xx xx"></label>
           <label>Instagram <small>(optional)</small><input id="bk-ig" placeholder="@yourname"></label>
           <p class="err" id="bk-err" hidden></p>
           <div class="row">
@@ -985,8 +985,10 @@ $("bk-next").onclick = () => {
 $("bk-back").onclick = () => showStep(1);
 $("bk-who").onsubmit = e => {
   e.preventDefault();
-  const name = $("bk-name").value.trim(), phone = $("bk-phone").value.replace(/[\s-]/g, "");
-  const err = !name ? "Please write your name." : !/^\+?\d{8,13}$/.test(phone) ? "Please write your phone number, for example 070 123 45 67." : "";
+  const name = $("bk-name").value.trim(), email = $("bk-email").value.trim(), phone = $("bk-phone").value.replace(/[\s-]/g, "");
+  const err = !name ? "Please write your name."
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? "Please write your e-mail, your confirmation is sent there."
+    : phone && !/^\+?\d{8,13}$/.test(phone) ? "This phone number looks wrong. You can also leave it empty." : "";
   $("bk-err").hidden = !err; $("bk-err").textContent = err;
   if (err) return;
   const r = calc(state);
@@ -996,12 +998,12 @@ $("bk-who").onsubmit = e => {
     ["Colours", pickedColours.map(id => colourName(colourById[id])).join(", ")],
     ["Design", $("mood-summary").textContent.replace(/^Design: /, "")],
   ];
-  const extra = [["E-mail", $("bk-email").value.trim()], ["Instagram", $("bk-ig").value.trim()]].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+  const extra = [["Phone", phone], ["Instagram", $("bk-ig").value.trim()]].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
   $("bk-msg").value = [
     "Hi Diana! Booking request from hordinails.com",
     ...rows.map(([a, b]) => `${a}: ${b}`),
     `Total: ${sek(r.kr)}, approx. ${dur(r.min)}`,
-    `Name: ${name}`, `Phone: ${phone}`, ...extra,
+    `Name: ${name}`, `E-mail: ${email}`, ...extra,
   ].join("\n");
   $("bk-copied").hidden = true;
   $("bk-total").textContent = sek(r.kr);
