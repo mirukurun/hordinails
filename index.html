@@ -343,6 +343,60 @@ body:not(.picked) .receipt, body:not(.picked) .tb-total { display: none; }
 .unsure { background: var(--flag-soft); border-radius: 12px; padding: 10px 12px; font-size: 13.5px; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; }
 .err { color: var(--flag); font-size: 14px; margin: 0; }
+
+/* Phones: denser grids and smaller spacing so works, tiers and colours don't take endless scrolling */
+@media (max-width: 600px) {
+  body { font-size: 14.5px; }
+  .wrap { padding-block: 18px 40px; }
+  #page-home > section { padding-block: 30px; }
+  #page-home > section.hero, .hero { padding-block: 24px 8px; }
+  .hero-h { font-size: 40px; }
+  .hero-text { gap: 14px; }
+  .hero-text .lede { font-size: 15px; }
+  .sec-h { font-size: 24px; margin-bottom: 12px; }
+  .about-text { font-size: 15px; }
+  .facts b { font-size: 30px; }
+  .steps { gap: 8px; }
+  .steps li { padding: 12px 14px; display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; row-gap: 2px; border-radius: 14px; }
+  .steps li::before { width: 40px; height: 40px; font-size: 24px; margin: 0; grid-row: span 2; }
+  .steps b { font-size: 15.5px; }
+  .price-grid { gap: 20px; }
+  .plist li { padding: 7px 0; }
+  .big-line { font-size: 22px; }
+  .studio { gap: 20px; }
+
+  /* Works: two columns on the home page, three in the full gallery, still free masonry */
+  .works { columns: 2; column-gap: 6px; }
+  #all-works { columns: 3; }
+  .works button { margin-bottom: 6px; border-radius: 10px; }
+  .gal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .gal-item { border-radius: 10px; }
+
+  /* Booking */
+  h1 { font-size: 24px; }
+  .panel { gap: 20px; }
+  .ruler button { grid-template-columns: 46px minmax(0, 1fr) auto; gap: 10px; padding: 8px 12px; }
+  .ruler .size { font-size: 17px; }
+  .ruler .what { font-size: 12.5px; line-height: 1.3; }
+
+  /* Tiers become rows: small photo on the left, name, price and list on the right */
+  .tiers { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .tier { display: grid; grid-template-columns: 72px minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 12px; row-gap: 4px; padding: 8px; align-items: start; }
+  .tier .pv { grid-row: 1 / span 2; width: 72px; border-radius: 8px; }
+  .tier .pv.empty { padding: 4px; font-size: 10.5px; line-height: 1.2; }
+  .tier .top { padding-top: 2px; }
+  .tier ul { font-size: 12.5px; line-height: 1.4; list-style: none; padding: 0; }
+  .tier li { display: inline; }
+  .tier li + li::before { content: " · "; }
+
+  /* Colours: six small dots per row */
+  .sw-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px 4px; margin-bottom: 10px; }
+  .sw { padding: 2px 0; gap: 2px; }
+  .sw img { max-width: 44px; }
+  .sw b { font-size: 11px; }
+  .sw small { font-size: 10px; }
+  .gal-h { margin: 4px 0 6px; }
+}
 .thinking { color: var(--muted); font-family: var(--pixel); }
 </style>
 </head>
