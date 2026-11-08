@@ -253,6 +253,10 @@ a.btn { display: inline-block; text-decoration: none; }
 .faq { display: grid; gap: 8px; max-width: 820px; }
 .faq details { border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; background: var(--surface); }
 .faq-link { margin: 18px 0 0; }
+/* Pages from the header: About, Prices and Studio show their home section alone; Works is its own page with every set */
+#page-home > section[hidden] { display: none; }
+#page-works > header, #page-works > .faq-link { max-width: 1080px; }
+#page-works > .faq-link { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 24px 0 40px; }
 #page-faq .faq { margin-inline: auto; }
 #page-faq .lede a { color: var(--ink); text-decoration-color: var(--glow); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 #page-faq > header { max-width: 820px; margin-inline: auto; }
@@ -304,6 +308,8 @@ a.btn { display: inline-block; text-decoration: none; }
 .chip[aria-pressed="true"] small { color: inherit; opacity: .8; }
 button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outline-offset: 2px; }
 
+/* The receipt and the top-bar total appear only after the first choice: before that the price is just the defaults */
+body:not(.picked) .receipt, body:not(.picked) .tb-total { display: none; }
 .receipt { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 @media (max-width: 820px) { .receipt { position: static; } }
 .lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
@@ -376,7 +382,7 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
       <p class="lede">Gel-X, upper forms and gel polish with the detailed stuff: chrome, lace, charms, tiny hand painting. See your price before you book, and pay nothing upfront.</p>
       <div class="row">
         <a class="btn" href="#booking">Build your set and book</a>
-        <a class="btn ghost" href="#booking" data-tab="gallery">See my works</a>
+        <a class="btn ghost" href="#works">See my works</a>
       </div>
     </div>
   </section>
@@ -401,7 +407,7 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
   <section class="wrap" id="works">
     <div class="sec-top">
       <h2 class="sec-h">Works</h2>
-      <a class="more" href="#booking" data-tab="gallery">All <span id="works-n"></span> works, colours and charms →</a>
+      <a class="more" href="#works">All <span id="works-n"></span> works →</a>
     </div>
     <div class="works" id="home-works"></div>
   </section>
@@ -469,6 +475,20 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
     <a href="#booking">Book a time →</a>
   </footer>
 </main>
+<div class="wrap page" id="page-works" hidden>
+  <header>
+    <div>
+      <p class="handle">Works · <span id="works-count"></span> sets</p>
+      <h1>Works</h1>
+      <p class="lede">Every set I've done, from plain colour to a different design on every nail. Tap a photo to see it bigger or add it to your design.</p>
+    </div>
+  </header>
+  <div class="works" id="all-works"></div>
+  <p class="faq-link">
+    <a class="more" href="#booking">Build your set and book →</a>
+    <a class="more" href="#booking" data-tab="gallery" data-gal="colours">See my colours and charms →</a>
+  </p>
+</div>
 <div class="wrap page" id="page-faq" hidden>
   <header>
     <div>
@@ -545,17 +565,17 @@ button:focus-visible, .drop:focus-within { outline: 2px solid var(--flag); outli
     <div>
       <section class="panel" id="view-build" role="tabpanel" aria-labelledby="tab-build">
         <div class="group">
-          <h2>Length</h2>
+          <h2>Length <span class="req">required</span></h2>
           <p class="sub">Measured from your fingertip to the tip of the nail. The base price depends on it.</p>
           <div class="ruler" id="ruler"></div>
         </div>
         <div class="group" id="method-q">
-          <h2>Extension method</h2>
+          <h2>Extension method <span class="req">required</span></h2>
           <p class="sub">How the length is built. The prices above are for Gel-X.</p>
           <div class="chips" id="method"></div>
         </div>
         <div class="group">
-          <h2>Nail design tier</h2>
+          <h2>Nail design tier <span class="req">required</span></h2>
           <p class="sub">Price for the whole set. Custom or moodboard designs are agreed when you book.</p>
           <p class="warn">Choose the tier honestly. If your design turns out more complex than the tier you picked, the final price goes up to the right tier.</p>
           <div class="tiers" id="tiers"></div>
@@ -726,15 +746,18 @@ const METHODS = {
   forms: { label: "Upper forms", what: "Built with gel on dual forms", kr: 100, min: 40 }
 };
 
-const state = { length: "M", tier: 2, extras: [], method: "gelx" };
+// Nothing is picked at the start: the client chooses length, method and tier herself
+const state = { length: null, tier: null, extras: [], method: null };
+var bookReady = false;
 
 const sek = n => n.toLocaleString("sv-SE") + " SEK";
 const dur = m => { const h = Math.floor(m / 60), r = m % 60; return (h ? h + " h" : "") + (h && r ? " " : "") + (r ? r + " min" : ""); };
 
 function calc(s) {
-  const ext = s.length !== "XS";
-  const lines = [{ label: `Length ${s.length}${ext && !METHODS[s.method].kr ? " · " + METHODS[s.method].label : ""}`, kr: LENGTHS[s.length].kr, min: LENGTHS[s.length].min }];
-  if (ext && METHODS[s.method].kr) lines.push({ label: METHODS[s.method].label, kr: METHODS[s.method].kr, min: METHODS[s.method].min });
+  const ext = s.length && s.length !== "XS";
+  const M = METHODS[s.method];
+  const lines = s.length ? [{ label: `Length ${s.length}${ext && M && !M.kr ? " · " + M.label : ""}`, kr: LENGTHS[s.length].kr, min: LENGTHS[s.length].min }] : [];
+  if (ext && M && M.kr) lines.push({ label: METHODS[s.method].label, kr: METHODS[s.method].kr, min: METHODS[s.method].min });
   if (s.tier > 0) lines.push({ label: `Design ${TIERS[s.tier].name.toLowerCase()}`, kr: TIERS[s.tier].kr, min: TIERS[s.tier].min });
   for (const e of s.extras) lines.push({ label: EXTRAS[e].label, kr: EXTRAS[e].kr, min: EXTRAS[e].min });
   return { lines, kr: lines.reduce((a, l) => a + l.kr, 0), min: lines.reduce((a, l) => a + l.min, 0) };
@@ -776,7 +799,7 @@ function renderTiers() {
 }
 
 function renderMethod() {
-  document.getElementById("method-q").hidden = state.length === "XS";
+  document.getElementById("method-q").hidden = !state.length || state.length === "XS";
   const box = document.getElementById("method");
   box.innerHTML = "";
   for (const [key, m] of Object.entries(METHODS)) {
@@ -822,15 +845,22 @@ function renderReceipt() {
   }
   document.getElementById("total").textContent = sek(r.kr);
   document.getElementById("tb-total").textContent = sek(r.kr);
-  document.getElementById("time").textContent = "approx. " + dur(r.min);
+  document.getElementById("time").textContent = r.min ? "approx. " + dur(r.min) : "";
 }
 
 function update() {
   const focused = document.activeElement?.id;
   renderRuler(); renderMethod(); renderTiers(); renderExtras(); renderReceipt();
+  if (bookReady) updateBook();
   if (focused) document.getElementById(focused)?.focus();
 }
 update();
+
+// Show the receipt once the client picks anything in the calculator (or adds a photo from the gallery)
+const markPicked = () => document.body.classList.add("picked");
+document.querySelector(".grid").addEventListener("click", e => {
+  if (e.target.closest("#ruler button, #tiers button, #method button, #extras button, #colour-picker .sw, #mood-choice .chip")) markPicked();
+}, true);
 
 // Moodboard question: what the client wants done, with photos the nail tech checks before confirming
 const mood = { choice: null, files: [] };
@@ -873,6 +903,7 @@ function renderMood() {
 }
 
 function addMoodFiles(list) {
+  markPicked();
   for (const f of list) {
     if (mood.files.length >= MAX_MOOD) break;
     if (!f.type.startsWith("image/") || mood.files.some(m => m.file === f)) continue;
@@ -979,13 +1010,17 @@ const agree = document.getElementById("agree");
 const book = document.getElementById("book");
 function updateBook() {
   const need = [];
+  if (!state.length) need.push("choose a length");
+  else if (state.length !== "XS" && !state.method) need.push("choose an extension method");
+  if (state.tier === null) need.push("choose a design tier");
   if (!pickedColours.length) need.push("choose at least one gel polish colour");
   if (!agree.checked) need.push("tick that you've read the rules");
   book.disabled = need.length > 0;
-  const msg = need.join(" and ");
+  const msg = need.length > 1 ? need.slice(0, -1).join(", ") + " and " + need.at(-1) : need.join("");
   document.getElementById("book-need").textContent = msg ? msg[0].toUpperCase() + msg.slice(1) + "." : "";
 }
 agree.onchange = updateBook;
+bookReady = true;
 // Booking: day + time from the slot length, then contact details, then the client sends the request to @hordi_nails on Instagram.
 // Studio hours by weekday (0 = Sunday): Mon–Fri 10–19, Sat 12–18, Sunday closed. An earlier Saturday start is possible only by arrangement.
 const HOURS = { 1: [600, 1140], 2: [600, 1140], 3: [600, 1140], 4: [600, 1140], 5: [600, 1140], 6: [720, 1080] };
@@ -1205,27 +1240,30 @@ menu.querySelectorAll("button").forEach(b => b.onclick = () => {
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !menu.hidden) { setMenu(false); burger.focus(); } });
 document.addEventListener("click", e => { if (!menu.hidden && !siteHead.contains(e.target)) setMenu(false); });
 
-const HOME_SECTIONS = ["top", "about", "works", "prices", "how", "studio"];
+// Pages: home (everything), #about / #prices / #studio (that home section alone), #works, #faq, #booking
+const SECTION_PAGES = ["about", "prices", "studio"];
 function route() {
   const name = location.hash.slice(1);
-  const booking = name === "booking", faq = name === "faq";
-  document.getElementById("page-home").hidden = booking || faq;
+  const booking = name === "booking", faq = name === "faq", works = name === "works";
+  const section = SECTION_PAGES.includes(name) ? name : null;
+  document.getElementById("page-home").hidden = booking || faq || works;
+  document.querySelectorAll("#page-home > section").forEach(s => s.hidden = !!section && s.id !== section);
+  document.getElementById("page-works").hidden = !works;
   document.getElementById("page-faq").hidden = !faq;
   document.getElementById("page-booking").hidden = !booking;
   document.body.classList.toggle("on-booking", booking);
-  document.querySelectorAll('.sh-links a, .menu a').forEach(a => a.toggleAttribute("aria-current", faq && a.getAttribute("href") === "#faq"));
+  document.querySelectorAll('.sh-links a, .menu a').forEach(a => a.toggleAttribute("aria-current", a.getAttribute("href") === "#" + name));
   setMenu(false);
   if (booking && openGallery) { openGallery = false; document.getElementById("tabs").scrollIntoView(); }
-  else if (booking || faq) window.scrollTo(0, 0);
-  else if (HOME_SECTIONS.includes(name)) document.getElementById(name).scrollIntoView();
+  else if (name === "how") document.getElementById("how").scrollIntoView();
   else window.scrollTo(0, 0);
 }
 window.addEventListener("hashchange", route);
-// "See my works" and "All works" open the booking page on the full gallery of works
+// Links with data-tab open the booking page on the gallery (works, or the view in data-gal)
 let openGallery = false;
 document.querySelectorAll("a[data-tab]").forEach(a => a.addEventListener("click", () => {
   showTab(a.dataset.tab);
-  galView = "works"; renderGallery();
+  galView = a.dataset.gal || "works"; renderGallery();
   openGallery = true;
   if (location.hash === "#booking") route();
 }));
@@ -1292,6 +1330,7 @@ document.getElementById("lb-use").onclick = async () => {
     const blob = await (await fetch(lbSrc)).blob();
     addMoodFiles([new File([blob], lbSrc.split("?")[0].split("/").pop(), { type: blob.type || "image/jpeg" })]);
     closeLightbox();
+    if (location.hash !== "#booking") { history.pushState(null, "", "#booking"); route(); }
     showTab("build");
     document.getElementById("design-q").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (e) {
@@ -1313,6 +1352,16 @@ document.getElementById("lb-use").onclick = async () => {
     box.append(b);
   }
   document.getElementById("works-n").textContent = GALLERY.works.groups[0].photos.length;
+  document.getElementById("works-count").textContent = GALLERY.works.groups[0].photos.length;
+  const all = document.getElementById("all-works");
+  GALLERY.works.groups[0].photos.forEach((src, i) => {
+    const b = document.createElement("button");
+    b.setAttribute("aria-label", `Open work ${i + 1}`);
+    b.innerHTML = `<img loading="lazy" alt="">`;
+    b.firstChild.src = src; b.firstChild.alt = workAlt(src);
+    b.onclick = () => openLightbox(src);
+    all.append(b);
+  });
   const li = (cls, parts) => { const el = document.createElement("li"); if (cls) el.className = cls; parts.forEach(([c, t]) => { const s = document.createElement("span"); s.className = c; s.textContent = t; el.append(s); }); return el; };
   const lens = document.getElementById("p-lengths");
   for (const [k, L] of Object.entries(LENGTHS)) lens.append(li("", [["k", k], ["d", L.what], ["v", sek(L.kr)]]));
