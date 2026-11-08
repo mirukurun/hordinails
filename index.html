@@ -60,7 +60,7 @@
   --flag: #ff7aa8; --flag-soft: #47202f; --polish: #3a3940; --cuticle: #c99a87; --skin-line: #8e6455; --tip: #f1ece4; color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body {
+body { margin: 0;
   background: radial-gradient(40rem 26rem at 12% 8%, var(--glow-soft), transparent 70%),
               radial-gradient(34rem 24rem at 92% 70%, var(--glow-soft), transparent 70%), var(--bg);
   background-attachment: fixed;
@@ -141,6 +141,8 @@ body:not(.on-booking) .menu button:not(.menu-cta) { display: none; }
   .burger { display: flex; }
   .sh-book { margin-left: auto; }
   body.on-booking .tb-total { margin-left: auto; }
+  /* Before the first choice the booking page has neither the Book button nor the total, so the burger itself goes right */
+  body.on-booking:not(.picked) .burger { margin-left: auto; }
 }
 @media (min-width: 821px) { .menu { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { .burger span, .works img { transition: none !important; animation: none !important; } }
@@ -294,10 +296,10 @@ a.btn { display: inline-block; text-decoration: none; }
 .sw[aria-pressed="true"] img { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--pick); }
 .sw[aria-pressed="true"] b::before { content: "✓ "; }
 .sw:focus-visible { outline: 2px solid var(--flag); outline-offset: 2px; }
-.picked { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.picked .pk { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; padding: 3px 10px 3px 3px; border-radius: 99px; cursor: pointer; }
-.picked .pk img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-.picked .none { color: var(--flag); font-size: 13.5px; margin: 0; }
+div.picked { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+div.picked .pk { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; padding: 3px 10px 3px 3px; border-radius: 99px; cursor: pointer; }
+div.picked .pk img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+div.picked .none { color: var(--flag); font-size: 13.5px; margin: 0; }
 .receipt-colours { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .receipt-colours img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--line); }
 .warn { margin: -4px 0 12px; padding: 8px 12px; border-left: 3px solid var(--flag); background: var(--flag-soft); border-radius: 0 10px 10px 0; font-size: 13.5px; }
