@@ -1289,7 +1289,7 @@ $("bk-who").onsubmit = async e => {
   }
   bk.sent = !!(res && res.ok);
   $("bk-sent").hidden = !bk.sent;
-  $("bk-sent").textContent = `Diana got your request. Once she has looked at it, you get an e-mail at ${email}, usually within a day. The time is held for you until then.`;
+  $("bk-sent").textContent = `Diana got your request. Once she has looked at it, you get an e-mail at ${email}, usually within a day. The time is held for you until then. The e-mail comes from booking@hordinails.com. If you can't find it, check your Spam or Junk folder and mark it as "Not spam".`;
   $("bk-ig-send").hidden = bk.sent;
   if (bk.sent) loadBusy();
   $("bk-total").textContent = sek(r.kr);
