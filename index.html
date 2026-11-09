@@ -60,6 +60,12 @@
   --flag: #ff7aa8; --flag-soft: #47202f; --polish: #3a3940; --cuticle: #c99a87; --skin-line: #8e6455; --tip: #f1ece4; color-scheme: dark;
 }
 * { box-sizing: border-box; }
+/* Text selection: brand lime, see-through; text colour chosen for contrast (light theme ~14:1, dark ~6:1) */
+::selection { background: rgba(217, 242, 74, .55); color: #141513; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) ::selection { background: rgba(212, 240, 74, .32); color: #fff; } }
+:root[data-theme="dark"] ::selection { background: rgba(212, 240, 74, .32); color: #fff; }
+/* On lime surfaces the lime selection would vanish, so it turns dark there */
+.btn ::selection, .btn::selection, .grand ::selection, .hot::selection, [aria-pressed="true"] ::selection, [aria-pressed="true"]::selection { background: rgba(20, 21, 19, .85); color: #d4f04a; }
 body { margin: 0;
   background: radial-gradient(40rem 26rem at 12% 8%, var(--glow-soft), transparent 70%),
               radial-gradient(34rem 24rem at 92% 70%, var(--glow-soft), transparent 70%), var(--bg);
@@ -147,11 +153,46 @@ body:not(.on-booking) .menu button:not(.menu-cta) { display: none; }
 @media (min-width: 821px) { .menu { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { .burger span, .works img { transition: none !important; animation: none !important; } }
 
+/* Desktop cursor: a lime arrow with a dark outline, also on buttons and links. Text fields keep the normal text cursor */
+@media (hover: hover) and (pointer: fine) {
+  html, body, * { cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M3 2.5 L3 19 L7.6 14.8 L10.6 21.4 L13.6 20 L10.7 13.6 L17 13.4 Z%22 fill=%22%23d4f04a%22 stroke=%22%23141513%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E") 3 2, auto; }
+  a, button, label, summary, select, [role="tab"], .gal-item, .works button, .sw, input[type="checkbox"], input[type="file"] { cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M3 2.5 L3 19 L7.6 14.8 L10.6 21.4 L13.6 20 L10.7 13.6 L17 13.4 Z%22 fill=%22%23d4f04a%22 stroke=%22%23141513%22 stroke-width=%221.6%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E") 3 2, pointer !important; }
+  input:not([type="checkbox"]):not([type="file"]), textarea { cursor: text !important; }
+}
 /* Home */
 a.btn { display: inline-block; text-decoration: none; }
 .page[hidden] { display: none; }
 .hero { display: grid; grid-template-columns: minmax(0, 1fr); padding-block: 48px 36px; }
 .hero-text { max-width: 760px; }
+/* Mascots: small, bottom right of the hero, one colour (ink). Loop: the dog visits the lying cat (heart), then tries the sitting cat and gets swatted */
+.hero { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px; }
+.mascots { width: 150px; height: auto; display: block; color: var(--ink); fill: currentColor; overflow: visible; }
+.mascots .ground { stroke: var(--line); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+.mascots g, .mascots .paw, .mascots .heart, .mascots .bonk, .mascots .tail { transform-box: fill-box; }
+.mascots .dog { animation: d-walk 10s ease-in-out infinite; }
+.mascots .dog-flip { transform-origin: 50% 50%; animation: d-flip 10s steps(1) infinite; }
+.mascots .dog-hop { transform-origin: 50% 100%; animation: d-hop 10s ease-out infinite; }
+.mascots .dog .tail { transform-origin: 100% 100%; animation: d-wag .35s ease-in-out infinite alternate; }
+.mascots .cat-a .tail { transform-origin: 0% 100%; animation: c-sway 3s ease-in-out infinite; }
+.mascots .cat-b { transform-origin: 50% 100%; animation: c-jump 10s ease-out infinite; }
+.mascots .paw { transform-origin: 0% 50%; animation: c-boop 10s ease-in-out infinite; }
+.mascots .heart { fill: var(--glow); opacity: 0; transform-origin: 50% 100%; }
+.mascots .h1 { animation: h-pop 10s ease-out infinite; }
+.mascots .bonk { opacity: 0; transform-origin: 50% 100%; animation: bonk 10s ease-out infinite; }
+@keyframes d-walk { 0%, 8% { transform: translateX(0); } 18%, 34% { transform: translateX(14px); } 44%, 52% { transform: translateX(0); } 62%, 67% { transform: translateX(-30px); } 70%, 78% { transform: translateX(-12px); } 90%, 100% { transform: translateX(0); } }
+@keyframes d-flip { 0% { transform: none; } 53% { transform: scaleX(-1); } 89% { transform: none; } }
+@keyframes d-hop { 0%, 67% { transform: none; } 69% { transform: translateY(-10px) rotate(-10deg); } 72% { transform: none; } 73% { transform: translateY(-3px); } 74%, 100% { transform: none; } }
+@keyframes d-wag { from { transform: rotate(-14deg); } to { transform: rotate(18deg); } }
+@keyframes c-sway { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-16deg); } }
+@keyframes c-jump { 0%, 20% { transform: none; } 23% { transform: translateY(-10px) scaleY(1.05); } 26% { transform: none; } 28% { transform: translateY(-4px); } 30%, 100% { transform: none; } }
+@keyframes c-boop { 0%, 65% { transform: none; } 66.5% { transform: translate(-2px, -10px); } 67.5% { transform: translate(14px, -8px); } 69%, 100% { transform: none; } }
+@keyframes bonk { 0%, 67% { opacity: 0; transform: scale(.5); } 68% { opacity: 1; transform: scale(1.1); } 72% { opacity: 1; transform: none; } 75%, 100% { opacity: 0; } }
+@keyframes h-pop { 0%, 21% { opacity: 0; transform: translateY(6px) scale(.4); } 25% { opacity: 1; transform: none; } 33% { opacity: 0; transform: translateY(-14px); } 100% { opacity: 0; } }
+/* On the About page alone the hero (and its mascots) is hidden, so the line pointing at them goes too */
+#top[hidden] ~ #about .desk-only { display: none; }
+/* Phones and narrow screens: no mascots (and no About line pointing at them), desktop only */
+@media (max-width: 820px) { .hero { grid-template-columns: minmax(0, 1fr); gap: 0; } .mascots, .desk-only { display: none; } }
+@media (prefers-reduced-motion: reduce) { .mascots * { animation: none !important; } }
 .hero-h { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(42px, 8vw, 92px); line-height: .92; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
 .hero-h em { font-style: normal; display: block; font-family: var(--pixel); text-transform: none; font-size: .5em; letter-spacing: 0; line-height: 1.2; color: var(--muted); margin-top: .15em; }
 .hero-text { display: flex; flex-direction: column; gap: 18px; }
@@ -168,14 +209,17 @@ a.btn { display: inline-block; text-decoration: none; }
 .sec-h { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(24px, 4vw, 36px); line-height: 1.05; margin: 0 0 18px; text-wrap: balance; }
 .sec-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
 .more { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--glow); text-decoration-thickness: 3px; text-underline-offset: 4px; }
-.about { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 12px 40px; }
-.about .sec-h { grid-column: 1 / -1; max-width: 22ch; }
-.about-text { display: flex; flex-direction: column; gap: 12px; font-size: 16px; max-width: 62ch; }
-.about-text p { margin: 0; }
-.facts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; align-self: start; }
-.facts li { display: flex; align-items: baseline; gap: 14px; border-top: 1px dashed var(--line); padding-top: 10px; }
-.facts b { font-family: var(--display); font-weight: 400; font-size: 40px; line-height: 1; min-width: 3.2ch; font-variant-numeric: tabular-nums; }
-.facts span { color: var(--muted); }
+.about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 56px; align-items: center; }
+.kicker { font-family: var(--pixel); font-size: 14px; color: var(--muted); margin: 0 0 10px; display: inline-flex; align-items: center; gap: 8px; }
+.kicker::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--glow); }
+.about-h { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(28px, 4vw, 42px); line-height: 1; letter-spacing: -.01em; margin: 0 0 16px; max-width: 16ch; overflow-wrap: anywhere; }
+.about-lead { font-size: clamp(17px, 1.9vw, 20px); line-height: 1.45; margin: 0 0 10px; max-width: 36ch; }
+.about-lead mark { background: none; color: inherit; text-decoration: underline; text-decoration-color: var(--glow); text-decoration-thickness: 4px; text-underline-offset: 4px; }
+.about-text { color: var(--muted); font-size: 15px; margin: 0; max-width: 46ch; }
+.stickers { list-style: none; margin: 0; padding: 0; display: inline-grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stickers li { border: 1.5px solid var(--ink); border-radius: 99px; padding: 8px 14px; font-weight: 700; font-size: 14.5px; background: var(--surface); text-align: center; }
+.stickers .num { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.stickers .num b { font-family: var(--display); font-weight: 400; margin-right: 4px; }
 @media (max-width: 820px) { .about { grid-template-columns: minmax(0, 1fr); } }
 .works { columns: 4 200px; column-gap: 10px; }
 .works button { display: block; width: 100%; margin: 0 0 10px; padding: 0; border: 0; background: none; border-radius: 14px; overflow: hidden; cursor: zoom-in; break-inside: avoid; }
@@ -356,8 +400,7 @@ body:not(.picked) .receipt, body:not(.picked) .tb-total { display: none; }
   .hero-text { gap: 14px; }
   .hero-text .lede { font-size: 15px; }
   .sec-h { font-size: 24px; margin-bottom: 12px; }
-  .about-text { font-size: 15px; }
-  .facts b { font-size: 30px; }
+
   .steps { gap: 8px; }
   .steps li { padding: 12px 14px; display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; row-gap: 2px; border-radius: 14px; }
   .steps li::before { width: 40px; height: 40px; font-size: 24px; margin: 0; grid-row: span 2; }
@@ -441,22 +484,46 @@ body:not(.picked) .receipt, body:not(.picked) .tb-total { display: none; }
         <a class="btn ghost" href="#works">See my works</a>
       </div>
     </div>
+    <!-- Mascots: two cats and the dachshund from the studio. One colour, simple shapes; the dog visits each cat in a 10 s loop -->
+    <svg class="mascots" viewBox="0 0 300 110" role="img" aria-label="Two cats and a dachshund, the studio mascots">
+      <g class="cat-a">
+        <path class="tail" d="M56 98 q16 0 10 -18" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+        <ellipse cx="40" cy="82" rx="20" ry="18"/>
+        <circle cx="40" cy="57" r="14"/>
+        <path d="M27 52 L29 37 L40 47 Z M40 47 L51 37 L53 52 Z"/>
+        <circle class="paw" cx="58" cy="86" r="5"/>
+      </g>
+      <g class="dog"><g class="dog-flip"><g class="dog-hop">
+        <path class="tail" d="M114 79 L98 69" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <rect x="110" y="72" width="72" height="20" rx="10"/>
+        <rect x="117" y="86" width="8" height="14" rx="3"/><rect x="166" y="86" width="8" height="14" rx="3"/>
+        <circle cx="184" cy="66" r="12"/>
+        <rect x="186" y="61" width="22" height="11" rx="5.5"/>
+      </g></g></g>
+      <g class="cat-b">
+        <rect x="226" y="80" width="54" height="20" rx="10"/>
+        <circle cx="236" cy="78" r="12"/>
+        <path d="M225 74 L227 62 L235 68 Z M237 68 L246 62 L247 74 Z"/>
+      </g>
+      <path class="heart h1" d="M222 52 c-4 -6 -12 -2 -8 4 l8 8 l8 -8 c4 -6 -4 -10 -8 -4 Z"/>
+      <path class="bonk" d="M66 66 l-4 -8 M72 64 l0 -9 M78 66 l4 -8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <line x1="8" y1="101" x2="296" y2="101" class="ground"/>
+    </svg>
   </section>
 
   <section class="band wrap" id="about">
     <div class="about">
-      <h2 class="sec-h">Hi, I'm Diana, the one behind @hordi_nails</h2>
-      <div class="about-text">
-        <p>I'm 21 and from Ukraine. I haven't been doing nails for that long, but I've always been the picky, creative one who redoes a detail until it's right. So I opened my own small studio.</p>
-        <p>I love the detailed sets: raised chrome, lace French, charms, a different design on every nail. Plain colour is welcome too, I just get happy when someone brings a weird idea.</p>
-        <p>I work from my home studio in Upplands Väsby, one client at a time. My cats and a dachshund live here, so tell me if you're allergic.</p>
-        <p>Not sure what you want? Send a screenshot or just a mood, and we'll figure it out together. I'd rather take an extra half hour than let you leave with nails I'm not happy with.</p>
+      <div class="about-main">
+        <p class="kicker">About me · 21</p>
+        <h2 class="about-h">Hi, I'm Diana, the one behind @hordi_nails</h2>
+        <p class="about-lead">From Ukraine, new to nails, but I've always been the one who redoes a tiny detail <mark>until it's right</mark>.</p>
+        <p class="about-text">Home studio in Upplands Väsby, one client at a time. Two cats and a dachshund live here<span class="desk-only"> (yes, the ones up there)</span>, so tell me if you're allergic.</p>
       </div>
-      <ul class="facts">
-        <li><b>1</b><span>client at a time</span></li>
-        <li><b>75</b><span>gel colours to pick from</span></li>
-        <li><b>0 kr</b><span>prepayment</span></li>
-      </ul>
+      <div class="about-side">
+        <ul class="stickers" aria-label="Quick facts">
+          <li class="num"><b>75</b> gel colours</li><li class="num"><b>0 kr</b> upfront</li>
+        </ul>
+      </div>
     </div>
   </section>
 
