@@ -804,15 +804,6 @@ body:not(.picked) .receipt, body:not(.picked) .tb-total { display: none; }
         </div>
       </div>
     </div>
-    <div class="lightbox" id="lightbox" hidden>
-      <figure>
-        <img id="lb-img" alt="">
-        <figcaption class="row">
-          <button class="btn" id="lb-use">Add to my design</button>
-          <button class="btn ghost" id="lb-close">Close</button>
-        </figcaption>
-      </figure>
-    </div>
 
     <aside class="receipt" aria-live="polite">
       <div class="receipt-mood" id="receipt-mood" hidden></div>
@@ -839,6 +830,16 @@ body:not(.picked) .receipt, body:not(.picked) .tb-total { display: none; }
   </div>
 </div>
 
+<!-- Photo viewer lives outside the pages so it opens from Home, Works and Booking alike -->
+<div class="lightbox" id="lightbox" hidden>
+  <figure>
+    <img id="lb-img" alt="">
+    <figcaption class="row">
+      <button class="btn" id="lb-use">Add to my design</button>
+      <button class="btn ghost" id="lb-close">Close</button>
+    </figcaption>
+  </figure>
+</div>
 <script>
 // Prices from the @hordi_nails "Price" and "Regler" highlights. Minutes: natural nail (XS) + removal + strengthening + one colour takes 2.5 h; Tier 5 adds about 3 h.
 // mm = how far the nail goes past the fingertip (estimate, to be confirmed by the studio)
