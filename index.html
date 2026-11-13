@@ -299,12 +299,21 @@ a.btn { display: inline-block; text-decoration: none; }
 #bk-who input:not([type="checkbox"]) { font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
 #bk-who input:focus-visible { outline: 2px solid var(--flag); outline-offset: 1px; }
 /* Friends promo code in the receipt */
-.promo summary { cursor: pointer; font-size: 13.5px; color: var(--muted); }
+.promo summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border: 1.5px dashed var(--ink); border-radius: 12px; font-weight: 700; font-size: 15px; color: var(--ink); transition: background .15s; }
+.promo summary::-webkit-details-marker { display: none; }
+.promo summary::before { content: "%"; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--stamp); color: var(--stamp-ink); font-family: var(--mono); font-weight: 800; }
+.promo summary::after { content: "+"; font-family: var(--mono); transition: transform .2s; }
+.promo[open] summary::after { transform: rotate(45deg); }
+.promo summary:hover { background: var(--lime-soft); }
 .promo .row { display: flex; gap: 8px; margin-top: 8px; }
 .promo input { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
 .promo input:focus-visible { outline: 2px solid var(--flag); outline-offset: 1px; }
 .promo .btn { padding: 9px 14px; }
-.promo .note { margin-top: 6px; }
+.promo-msg { margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; font-size: 14.5px; font-weight: 700; }
+.promo-msg:empty { display: none; }
+.promo-msg.bad { color: var(--flag); background: var(--flag-soft); border-left: 4px solid var(--flag); }
+.promo-msg.ok { color: var(--ink); background: var(--lime-soft); border-left: 4px solid var(--lime); }
+.promo input.bad { border-color: var(--flag); border-width: 2px; }
 .grand { background: var(--glow); color: var(--on-glow); border-radius: 12px; padding: 10px 14px; display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 12px; }
 .grand span { font-weight: 600; font-size: 13.5px; }
 .grand b { grid-row: span 2; grid-column: 2; font-family: var(--display); font-weight: 650; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -964,7 +973,7 @@ h1, .hero-h, .sec-h, .about-h, .group h2, .sheet h2 { font-family: var(--display
           <input id="promo-input" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Promo code" placeholder="Promo code">
           <button class="btn ghost" type="submit">Apply</button>
         </form>
-        <p class="note" id="promo-msg" aria-live="polite"></p>
+        <p class="promo-msg" id="promo-msg" role="status" aria-live="polite"></p>
       </details>
       <p class="note">Time is approximate: it depends on your nails and how the design goes. Plan a little extra.</p>
       <p class="note" id="mood-summary">Design: not answered yet</p>
@@ -1144,10 +1153,12 @@ const sha256 = async t => [...new Uint8Array(await crypto.subtle.digest("SHA-256
 document.getElementById("promo-form").onsubmit = async e => {
   e.preventDefault();
   const code = document.getElementById("promo-input").value.trim(), msg = document.getElementById("promo-msg");
-  if (!code) { state.promo = ""; msg.textContent = ""; update(); return; }
+  if (!code) { state.promo = ""; msg.textContent = ""; msg.className = "promo-msg"; document.getElementById("promo-input").classList.remove("bad"); update(); return; }
   const ok = await sha256(code) === PROMO.hash;
   state.promo = ok ? code : "";
-  msg.textContent = ok ? "Code applied: −100 SEK." : "This code doesn't work. Check the capital letters and symbols.";
+  msg.textContent = ok ? "✓ Code applied: −100 SEK." : "✕ This code doesn't work. Check the capital letters and symbols.";
+  msg.className = "promo-msg " + (ok ? "ok" : "bad");
+  document.getElementById("promo-input").classList.toggle("bad", !ok);
   update();
 };
 
