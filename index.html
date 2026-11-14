@@ -6,6 +6,9 @@
 <title>Hordi Nails · Gel-X and nail art in Upplands Väsby, Stockholm</title>
 <meta name="description" content="Nail studio in Upplands Väsby, Stockholm. Gel-X, upper forms and gel polish with detailed nail art: chrome, lace, charms, hand painting. See your price online, book without prepayment. From 300 SEK.">
 <link rel="canonical" href="https://hordinails.com/">
+<link rel="alternate" hreflang="en" href="https://hordinails.com/">
+<link rel="alternate" hreflang="sv" href="https://hordinails.com/sv/">
+<link rel="alternate" hreflang="x-default" href="https://hordinails.com/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="geo.region" content="SE-AB"><meta name="geo.placename" content="Upplands Väsby">
 <meta property="og:type" content="website">
@@ -140,6 +143,9 @@ textarea:focus-visible { outline: 2px solid var(--flag); outline-offset: 2px; }
 body:not(.on-booking) .tb-total { display: none; }
 body:not(.on-booking) .sh-book { margin-left: auto; }
 .sh-book { text-decoration: none; padding: 9px 16px; }
+.sh-lang { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 13px; letter-spacing: .04em; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; flex: none; }
+.sh-lang:hover { border-color: var(--ink); }
+.sh-lang:focus-visible { outline: 2px solid var(--flag); outline-offset: 2px; }
 body.on-booking .sh-book { display: none; }
 .burger { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px; flex: none; }
 .burger span { display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform .2s ease, opacity .2s ease; }
@@ -617,6 +623,7 @@ h1, .hero-h, .sec-h, .about-h, .group h2, .sheet h2 { font-family: var(--display
     </nav>
     <span class="tb-total" id="tb-total" title="Your set so far"></span>
     <a class="btn sh-book" href="#booking">Book</a>
+    <a class="sh-lang" href="/sv/" hreflang="sv" lang="sv" aria-label="På svenska">SV</a>
     <button class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
   <nav class="menu" id="menu" aria-label="Menu" hidden>
@@ -625,6 +632,7 @@ h1, .hero-h, .sec-h, .about-h, .group h2, .sheet h2 { font-family: var(--display
     <a href="#prices">Prices</a>
     <a href="#studio">Studio and hours</a>
     <a href="#faq">Questions (FAQ)</a>
+    <a href="/sv/" hreflang="sv" lang="sv">På svenska</a>
     <a href="#booking" class="menu-h">Booking</a>
     <button data-go="build">Build your set</button>
     <button data-go="gallery">Works, colours, charms</button>
@@ -733,7 +741,7 @@ h1, .hero-h, .sec-h, .about-h, .group h2, .sheet h2 { font-family: var(--display
         <h2 class="sec-h">Studio</h2>
         <p class="big-line">Upplands Väsby</p>
         <p class="sub">Home studio. You get the exact address with your booking confirmation.</p>
-        <p class="sub" lang="sv">På svenska: nagelstudio i Upplands Väsby. Gel-X, nagelförlängning, gellack och nageldesign, från 300 kr. Ingen förskottsbetalning.</p>
+        <p class="sub" lang="sv"><a class="more" href="/sv/" hreflang="sv">På svenska: nagelstudio i Upplands Väsby, Gel-X, gellack och nageldesign →</a></p>
         <ul class="hours" id="home-hours"></ul>
         <p class="sub">Saturday before 12? Message me on Instagram, sometimes it's possible.</p>
       </div>

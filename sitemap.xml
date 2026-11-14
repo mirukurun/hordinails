@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://hordinails.com/</loc>
-    <lastmod>2026-11-07</lastmod>
+    <lastmod>2026-11-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hordinails.com/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://hordinails.com/sv/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hordinails.com/"/>
     <image:image><image:loc>https://hordinails.com/gallery/works-01.jpg</image:loc><image:title>Black ombre chrome square nails, Hordi Nails Upplands Väsby</image:title></image:image>
     <image:image><image:loc>https://hordinails.com/gallery/works-02.jpg</image:loc><image:title>Dark aura gel nails, Hordi Nails Upplands Väsby</image:title></image:image>
     <image:image><image:loc>https://hordinails.com/gallery/works-03.jpg</image:loc><image:title>Colourful hand-painted cartoon nail art, Hordi Nails Upplands Väsby</image:title></image:image>
@@ -31,5 +34,12 @@
     <image:image><image:loc>https://hordinails.com/gallery/works-26.jpg</image:loc><image:title>Burgundy cat-eye nails with wood effect and lettering, Hordi Nails Upplands Väsby</image:title></image:image>
     <image:image><image:loc>https://hordinails.com/gallery/works-27.jpg</image:loc><image:title>Tortoiseshell nails with a butterfly, Hordi Nails Upplands Väsby</image:title></image:image>
     <image:image><image:loc>https://hordinails.com/gallery/works-28.jpg</image:loc><image:title>Plain purple gel polish, Hordi Nails Upplands Väsby</image:title></image:image>
+  </url>
+  <url>
+    <loc>https://hordinails.com/sv/</loc>
+    <lastmod>2026-11-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hordinails.com/"/>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://hordinails.com/sv/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hordinails.com/"/>
   </url>
 </urlset>
