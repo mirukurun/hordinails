@@ -253,6 +253,22 @@ a.btn { display: inline-block; text-decoration: none; }
 .plist .k { font-family: var(--display); font-weight: 650; font-size: 17px; }
 .plist .d { color: var(--muted); font-size: 13.5px; }
 .plist .v { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Google reviews */
+.rv-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin: 0 0 18px; }
+.rv-score b { font-family: var(--display); font-weight: 650; font-size: clamp(40px, 6vw, 60px); line-height: 1; letter-spacing: -.03em; }
+.rv-score .rv-stars { font-size: 22px; }
+.rv-src { color: var(--muted); font-size: 14px; }
+.rv-stars { color: var(--ink); letter-spacing: 2px; line-height: 1; }
+:root[data-theme="dark"] .rv-stars { color: var(--lime); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .rv-stars { color: var(--lime); } }
+.rv-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.rv { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.rv .rv-stars { font-size: 14px; }
+.rv p { margin: 0; }
+.rv .rv-tr { color: var(--muted); font-size: 13.5px; }
+.rv-name { font-weight: 700; font-size: 14.5px; }
+@media (max-width: 1000px) { .rv-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .rv-list { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
 .steps { list-style: none; counter-reset: s; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px; }
 .steps li::before { content: counter(s); font-family: var(--display); font-size: 34px; line-height: 1; color: var(--on-glow); background: var(--glow); width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 6px; }
@@ -683,6 +699,18 @@ h1, .hero-h, .sec-h, .about-h, .group h2, .sheet h2 { font-family: var(--display
       <a class="more" href="#works">All <span id="works-n"></span> works →</a>
     </div>
     <div class="works" id="home-works"></div>
+  </section>
+
+  <!-- Google reviews: copied by hand from Google Maps (no API, no address). Update the rating, count and cards when new reviews come in -->
+  <section class="wrap" id="reviews">
+    <h2 class="sec-h">Reviews</h2>
+    <p class="rv-score"><b>5.0</b><span class="rv-stars" role="img" aria-label="5 out of 5 stars">★★★★★</span><span class="rv-src">4 reviews on Google</span></p>
+    <ul class="rv-list">
+      <li class="rv"><span class="rv-stars" role="img" aria-label="5 stars">★★★★★</span><p>Excellent, professional service at affordable prices. Highly recommended</p><span class="rv-name">Aynur A.</span></li>
+      <li class="rv"><span class="rv-stars" role="img" aria-label="5 stars">★★★★★</span><p lang="sv">Personligen gillade jag det verkligen!!! Teknikern var bekväm, platsen var steril och det fanns två söta katter. De hade ett brett utbud av material och en mängd designalternativ. Jag rekommenderar dem starkt.</p><p class="rv-tr">In English: I personally really loved it! The nail tech was easy to be with, the place was sterile and there were two cute cats. Lots of materials and design options. Highly recommend.</p><span class="rv-name">Іванна Г.</span></li>
+      <li class="rv"><span class="rv-stars" role="img" aria-label="5 stars">★★★★★</span><p lang="ru">Ногти получились именно такими, как я хотела, работа выполнена аккуратно и красиво, всё сделано очень внимательно и с любовью к своему делу. Обязательно вернусь снова и с удовольствием буду рекомендовать своим знакомым! ❤️</p><p class="rv-tr">In English: My nails came out exactly how I wanted. Neat, beautiful work, done with care and love for the craft. I'll be back for sure and will happily recommend her to friends!</p><span class="rv-name">Asel K.</span></li>
+      <li class="rv"><span class="rv-stars" role="img" aria-label="5 stars">★★★★★</span><p lang="sv">Snyggt och stilrent jobb!</p><p class="rv-tr">In English: Neat and stylish work!</p><span class="rv-name">Оля Д.</span></li>
+    </ul>
   </section>
 
   <section class="band wrap" id="about">
